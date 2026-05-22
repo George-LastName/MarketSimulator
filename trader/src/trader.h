@@ -11,5 +11,21 @@
  * but should aim for possible extensions to other types.
  */
 
+class ItchClient{
+
+};
+
+class OrderBook{
+
+};
+
+class Signals{
+
+};
+
+class OuchClient{
+
+};
+
 
 #endif //NS_TRADER_TRADER_H_
