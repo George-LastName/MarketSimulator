@@ -48,8 +48,8 @@ private:
 public:
 	ItchServer(/*const ItchConfig& config*/);
 	~ItchServer();
-	// start.
-	// send message.
+
+	void Send(const void * message, size_t message_length);
 	// stop
 };
 
@@ -63,10 +63,9 @@ public:
 };
 
 class Exchange{
-private:
+public:
 	ItchServer itch_server_;
 	OuchServer ouch_server_;
-public:
 	// Exchange(const ItchConfig& itch_config, const OuchConfig& ouch_config)
 	// 	: itch_server_(itch_config), ouch_server_(ouch_config) {}
 	Exchange() : itch_server_(), ouch_server_() {};

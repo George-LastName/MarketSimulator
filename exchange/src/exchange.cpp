@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <cassert>
 #include <format>
+#include <iostream>
+#include <cstring>
 
 
 
@@ -37,5 +39,16 @@ ItchServer::~ItchServer(){
     assert(("The socket has closed before deconstruction" && socket_ > 0));
     if (socket_ > 0){
         close(socket_);
+    }
+}
+
+void ItchServer::Send(const void * message, size_t message_length){
+    ssize_t sent = sendto(socket_, message, message_length, 0, (struct sockaddr*)&destination_, sizeof(destination_));
+
+    if(sent < 0){
+        int err = errno;
+        std::clog << "sento Error: " << strerror(err) << " | errno=" << err << "\n";
+    } else if (static_cast<size_t>(sent) != message_length) {
+        std::clog << "sendto did not send whole message.\nLength: " << message_length << "\nSent  : " << sent << "\n";
     }
 }
