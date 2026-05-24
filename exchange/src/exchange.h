@@ -20,10 +20,8 @@
  */
 
 struct ItchConfig {
-	char* multicast_group;
+	char* multicast_ipv4;
 	uint16_t port;
-	int address_family;
-	int socket_type;
 	int protocol;
 };
 
@@ -35,21 +33,26 @@ struct OuchConfig {
 
 class ItchServer{
 private:
-	struct {
-		char* session[10];
-		uint64_t sequence_number;
-		uint16_t message_count;
-	} PacketHeader_;
+	// Max UDP 1500 (IPv4 + Ethernet) - 20 IPv4 Header - 8 UDP Header = 1472
+	static constexpr size_t MAX_MESSAGE_SIZE = 1472;
+	char* session_[10];
+	uint64_t sequence_number_;
+	uint16_t message_count_;
 
 	// broadcaster
 	int socket_;
 	sockaddr_in destination_{};
 
+	uint8_t message_[MAX_MESSAGE_SIZE];
+	size_t message_length_ = 20;
+
 public:
 	ItchServer(/*const ItchConfig& config*/);
 	~ItchServer();
 
-	void Send(const void * message, size_t message_length);
+	void Send();
+	void Send(const void* message, size_t message_length);
+	void AppendMessage(const void*message_to_append, uint16_t additional_length);
 	// stop
 };
 

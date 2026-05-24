@@ -23,14 +23,7 @@ ItchServer::ItchServer(/*const ItchConfig& config*/){
     destination_.sin_family = address_family;
     destination_.sin_port   = htons(port);
 
-
-    // For testing on one machine
-    int loop = 1;
-    setsockopt(socket_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
-
-
-    // Set when testing trader and exchange on one machine.
-#ifdef LOCAL_TESTING
+#ifdef LOCAL_TESTING // Set when testing trader and exchange on one machine.
     int reuse = 1;
     if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
         throw std::runtime_error("Failed to set SO_REUSEADDR on Itch Server.\n");
@@ -59,7 +52,21 @@ ItchServer::~ItchServer(){
     }
 }
 
-void ItchServer::Send(const void * message, size_t message_length){
+void ItchServer::Send(){
+    ssize_t sent = sendto(socket_, message_, message_length_, 0, (struct sockaddr*)&destination_, sizeof(destination_));
+
+    if(sent < 0){
+        int err = errno;
+        std::clog << "sento Error: " << strerror(err) << " | errno=" << err << "\n";
+    } else if (static_cast<size_t>(sent) != message_length_) {
+        std::clog << "sendto did not send whole message.\nLength: " << message_length_ << "\nSent  : " << sent << "\n";
+    }
+    message_length_ = 20;
+    sequence_number_ += message_count_;
+    message_count_ = 0;
+}
+
+void ItchServer::Send(const void* message, size_t message_length){
     ssize_t sent = sendto(socket_, message, message_length, 0, (struct sockaddr*)&destination_, sizeof(destination_));
 
     if(sent < 0){
