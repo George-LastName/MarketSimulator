@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 4.3.3)
 project (Nasdaq_Exchange)
 
 add_executable(${PROJECT_NAME}

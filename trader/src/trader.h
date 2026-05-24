@@ -1,6 +1,8 @@
 #ifndef NS_TRADER_TRADER_H_
 #define NS_TRADER_TRADER_H_
 
+#include <sys/socket.h>
+#include <netinet/in.h>
 /* The Trader has 4 purposes.
  * 1. Listen to UDP stream
  * 2. Update Order Book with stream messages.
@@ -12,7 +14,12 @@
  */
 
 class ItchClient{
-
+public:
+    int socket_;
+    sockaddr_in destination_{};
+    ItchClient();
+    ~ItchClient();
+    ssize_t Receive(void* buffer, size_t length);
 };
 
 class OrderBook{
