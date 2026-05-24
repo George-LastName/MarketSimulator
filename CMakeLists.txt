@@ -4,6 +4,8 @@ project(NasdaqSimulator)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(LOCAL_TESTING "Enable for test exchange and trader on one machine." OFF)
+
 add_compile_options(
     -Wall
     -Wextra
