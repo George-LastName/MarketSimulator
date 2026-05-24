@@ -28,6 +28,13 @@ ItchServer::ItchServer(/*const ItchConfig& config*/){
     int loop = 1;
     setsockopt(socket_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
 
+    // Force multicast out of the loopback interface
+    struct in_addr local_interface{};
+    local_interface.s_addr = inet_addr("127.0.0.1");
+    if(setsockopt(socket_, IPPROTO_IP, IP_MULTICAST_IF, &local_interface, sizeof(local_interface)) < 0){
+        throw std::runtime_error("Failed to set IP_MULTICAST_IF\n");
+    }
+
     int outcome = inet_pton(address_family, multicast_group, &destination_.sin_addr);
     if(outcome < 1){
         throw std::runtime_error(std::format("Failed to convert network address -> {}\n0: invalid network address provided.\n-1:No valid address family\n", outcome));

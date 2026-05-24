@@ -33,7 +33,8 @@ ItchClient::ItchClient(){
 
     struct ip_mreq mreq{};
     mreq.imr_multiaddr.s_addr = inet_addr(multicast_group);
-    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+    // mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+    mreq.imr_interface.s_addr = inet_addr("127.0.0.1");
 
     if (setsockopt(socket_, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) {
         throw std::runtime_error("Failed to join multicast group on Itch Client.\n");
