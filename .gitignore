@@ -70,3 +70,7 @@ Testing/
 
 #docs
 docs/
+
+#agent skills
+.claude/
+skills-lock.json
