@@ -22,15 +22,7 @@ public:
     ssize_t Receive(void* buffer, size_t length);
 };
 
-class OrderBook{
-
-};
-
 class Signals{
-
-};
-
-class OuchClient{
 
 };
 

@@ -36,8 +36,8 @@ private:
 	// Max UDP 1500 (IPv4 + Ethernet) - 20 IPv4 Header - 8 UDP Header = 1472
 	static constexpr size_t MAX_MESSAGE_SIZE = 1472;
 	char* session_[10];
-	uint64_t sequence_number_;
-	uint16_t message_count_;
+	uint64_t sequence_number_ = 1;
+	uint16_t message_count_  = 0;
 
 	// broadcaster
 	int socket_;
@@ -56,21 +56,9 @@ public:
 	// stop
 };
 
-class OuchServer{
-private:
-	// server for incoming trades.
-public:
-	OuchServer(/*const OuchConfig& config*/){};
-	// start
-	// stop
-};
-
-class Exchange{
+class Exchange {
 public:
 	ItchServer itch_server_;
-	OuchServer ouch_server_;
-	// Exchange(const ItchConfig& itch_config, const OuchConfig& ouch_config)
-	// 	: itch_server_(itch_config), ouch_server_(ouch_config) {}
-	Exchange() : itch_server_(), ouch_server_() {};
+	Exchange() : itch_server_() {}
 };
-#endif //NS_EX_CHANGE_H_
+#endif  // NS_EX_CHANGE_H_

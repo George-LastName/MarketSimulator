@@ -1,9 +1,12 @@
-cmake_minimum_required(VERSION 4.3.3)
+cmake_minimum_required(VERSION 3.16)
 project (Nasdaq_Exchange)
 
 add_executable(${PROJECT_NAME}
     exchange_setup.cpp
     src/exchange.cpp
+    src/soup_bin_tcp_server.cpp
+    src/exchange_order_book.cpp
+    src/ouch_server.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

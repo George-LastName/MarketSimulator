@@ -15,7 +15,7 @@
 ItchServer::ItchServer(/*const ItchConfig& config*/){
     int address_family = AF_INET;
     int protocol = 0;
-    const char* multicast_group = "234.255.255.255";
+    const char* multicast_group = "239.1.2.3";
     int port = 21001;
     socket_ = socket(address_family, SOCK_DGRAM, protocol);
     if (socket_ < 0) { throw std::runtime_error("Failed to create Itch Server socket.\n"); }
@@ -52,18 +52,41 @@ ItchServer::~ItchServer(){
     }
 }
 
+void ItchServer::AppendMessage(const void* message_to_append,
+                               uint16_t additional_length) {
+    if (message_length_ + 2 + additional_length > MAX_MESSAGE_SIZE) {
+        // Flush what we have before appending.
+        Send();
+    }
+    uint16_t len_be = htons(additional_length);
+    std::memcpy(message_ + message_length_, &len_be, 2);
+    std::memcpy(message_ + message_length_ + 2, message_to_append,
+                additional_length);
+    message_length_ += 2 + additional_length;
+    ++message_count_;
+}
+
 void ItchServer::Send(){
-    ssize_t sent = sendto(socket_, message_, message_length_, 0, (struct sockaddr*)&destination_, sizeof(destination_));
+    // Write MoldUDP64 header into the first 20 bytes before sending.
+    std::memset(message_, ' ', 10);  // session (space-padded, already set at init)
+    uint64_t seq_be    = __builtin_bswap64(sequence_number_);
+    uint16_t count_be  = htons(message_count_);
+    std::memcpy(message_ + 10, &seq_be,   8);
+    std::memcpy(message_ + 18, &count_be, 2);
+
+    ssize_t sent = sendto(socket_, message_, message_length_, 0,
+                          (struct sockaddr*)&destination_, sizeof(destination_));
 
     if(sent < 0){
         int err = errno;
-        std::clog << "sento Error: " << strerror(err) << " | errno=" << err << "\n";
+        std::clog << "sendto Error: " << strerror(err) << " | errno=" << err << "\n";
     } else if (static_cast<size_t>(sent) != message_length_) {
-        std::clog << "sendto did not send whole message.\nLength: " << message_length_ << "\nSent  : " << sent << "\n";
+        std::clog << "sendto did not send whole message.\nLength: "
+                  << message_length_ << "\nSent: " << sent << "\n";
     }
-    message_length_ = 20;
     sequence_number_ += message_count_;
-    message_count_ = 0;
+    message_count_   = 0;
+    message_length_  = 20;
 }
 
 void ItchServer::Send(const void* message, size_t message_length){

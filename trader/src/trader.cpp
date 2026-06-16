@@ -11,7 +11,7 @@
 ItchClient::ItchClient(){
     int address_family = AF_INET;
     int protocol = 0;
-    const char* multicast_group = "234.255.255.255";
+    const char* multicast_group = "239.1.2.3";
     int port = 21001;
 
     socket_ = socket(address_family, SOCK_DGRAM, protocol);
